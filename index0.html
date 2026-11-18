@@ -1,0 +1,154 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>English – Unit 1: Back to School</title>
+<style>
+:root{--bg:#d9f0ff;--card:#fff;--ink:#14305e;--pri:#ff8a1f;--sec:#1f5fd1;--ok:#22a85a;--bad:#e5484d;--soft:#fff1b8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1d38;--card:#1a2d54;--ink:#f0f5ff;--soft:#3b3a63;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1d38;--card:#1a2d54;--ink:#f0f5ff;--soft:#3b3a63;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:19px/1.45 "Comic Sans MS","Chalkboard SE",ui-rounded,system-ui,sans-serif}
+body.tm{font-size:25px}
+.top{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--sec);color:#fff;flex-wrap:wrap}
+.top b{font-size:1.1em}.top .btn{min-height:44px;padding:6px 14px;margin:2px;background:#fff;color:var(--sec);box-shadow:none}
+.top .on{background:var(--pri);color:#fff}
+#app{padding:10px 12px 40px}
+.card{background:var(--card);border-radius:26px;padding:20px;margin:12px auto;max-width:1000px;box-shadow:0 6px 0 rgba(0,0,0,.14);animation:pop .35s}
+.btn{font:inherit;font-weight:800;border:0;border-radius:18px;padding:12px 20px;margin:6px;background:var(--sec);color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.25);cursor:pointer;min-height:56px}
+.btn:active{transform:translateY(3px);box-shadow:none}.btn:disabled{opacity:.4}
+.btn.o{background:var(--pri)}.btn.opt{background:var(--card);color:var(--ink);border:3px solid var(--sec)}
+.ok{background:var(--ok)!important;color:#fff!important;border-color:var(--ok)!important}
+.bad{background:var(--bad)!important;color:#fff!important;animation:sh .3s}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.grid .btn{margin:0}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}.cols .btn{display:block;width:100%;margin:5px 0}
+.vc{background:var(--soft);border-radius:20px;padding:14px;text-align:center;cursor:pointer}
+.em{font-size:54px;display:block}.big{font-size:92px;text-align:center}
+.bar{height:16px;background:rgba(120,120,120,.25);border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),#ffd23f);transition:width .6s}
+.ar{direction:rtl;unicode-bidi:isolate}
+.ican,.pat,.ans,.slot{background:var(--soft);border-radius:18px;padding:12px 16px;margin:10px 0}
+.pat{font-size:1.3em;text-align:center;font-weight:800}.slot{min-height:64px;text-align:center;font-size:1.5em}
+.sn{background:var(--soft);padding:10px 16px;border-radius:16px;cursor:pointer;margin:8px 0}
+.txt{display:flex;gap:14px;align-items:flex-start}.txt .av{font-size:70px}
+.mascot{font-size:96px;animation:bob 2s infinite ease-in-out}
+.big2{font-size:1.3em;padding:18px 28px}
+.nav{display:flex;justify-content:center;flex-wrap:wrap;max-width:1000px;margin:auto}
+.lv{min-height:130px;line-height:1.3}.lv.lock{opacity:.45}.lv .em{font-size:44px}
+#toast{display:none;position:fixed;left:50%;top:38%;transform:translateX(-50%);background:var(--soft);color:var(--ink);border:4px solid var(--pri);border-radius:26px;padding:14px 30px;font-size:2em;font-weight:800;z-index:10;animation:pop .3s}
+.fl{position:fixed;font-size:34px;pointer-events:none;animation:fly 1.2s ease-out forwards;z-index:9}
+@keyframes fly{to{transform:translate(var(--x),-280px) rotate(360deg);opacity:0}}
+@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes pop{from{transform:scale(.92);opacity:0}}
+@keyframes bob{50%{transform:translateY(-12px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<div class="top"><b>🎒 English · Unit 1</b><span id="stars">⭐ 0</span><span><button class="btn" id="hm">🏠 Home</button><button class="btn" id="mp">🗺️ Map</button><button class="btn" id="tb">👩‍🏫 Teacher Mode</button></span></div>
+<div id="app"></div><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),sh=a=>[...a].sort(()=>Math.random()-.5),pick=a=>a[Math.random()*a.length|0],on=(s,f)=>document.querySelectorAll(s).forEach(b=>b.onclick=()=>f(b));
+const S={stars:0,done:[],teacher:false,fs:0};let items=[],i=0,onEnd=null,fin=false,ttl='';
+const P=['Excellent!','Amazing!','Well Done!','Great Job!','Super!'];
+const say=t=>{try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.85;speechSynthesis.speak(u)}catch(e){}};
+const tst=m=>{const t=$('#toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',1100);$('#stars').textContent='⭐ '+S.stars};
+const fx=m=>{for(let k=0;k<14;k++){const s=document.createElement('span');s.className='fl';s.textContent=pick(['⭐','🎉','✨','🌟']);s.style.cssText='left:'+(25+Math.random()*50)+'%;top:62%;--x:'+((Math.random()-.5)*300)+'px';document.body.append(s);setTimeout(()=>s.remove(),1300)}tst(m||pick(P))};
+const win=(f,m)=>{if(f){S.stars++;S.fs++}fx(m)};
+document.addEventListener('click',e=>{const s=e.target.closest('[data-say]');if(s)say(s.dataset.say)});
+const E={subject:['📚','مادة دراسية'],'social studies':['🌍','الدراسات الاجتماعية'],Islamic:['🕌','التربية الإسلامية'],CCDI:['🎨💻','CCDI (الرسم وصنع الأشياء على الحاسوب)'],science:['🔬','العلوم'],easy:['😄','سهل'],difficult:['🪨','صعب'],interesting:['🐉','ممتع ومثير للاهتمام'],boring:['🥱','ممل']};
+const vc=w=>`<div class="vc" data-say="${w}"><span class="em">${E[w][0]}</span><b>${w}</b><br><small class="ar">${E[w][1]}</small> 🔊</div>`;
+const sen=s=>`<div class="sn" data-say="${s}">🔊 ${s}</div>`;
+const can=a=>`<div class="ican"><b>📖 I can:</b><br>${a.map(x=>'⭐ '+x).join('<br>')}</div>`;
+const LS=[
+{n:'Level 1',t:'School Subjects',e:'📚',b:'🏅 Subject Star',items:[
+{t:'s',h:'🎒 Back to School!',html:`<div style="text-align:center"><div class="mascot">🦉</div><p>“Hello! Today we talk about our <b>favourite subjects</b> at school.”</p></div>`+can(['Use a glossary or dictionary to find or check what a word means.','Ask a question about something I heard.','Use topic-specific words correctly when I speak.'])},
+{t:'s',h:'📖 New Words',html:`<p>Tap a card to listen 🔊</p><div class="grid">${['subject','social studies','Islamic','CCDI','science'].map(vc).join('')}</div>`},
+{t:'s',h:'💬 Say it!',html:`<p>Talk about your favourite subjects at school. Tap a sentence to listen:</p>${sen('I learn about the UAE in social studies.')}${sen('I love to draw and design in CCDI.')}${sen('Science is my favourite subject.')}${sen('I like my Islamic teacher.')}${sen('Social studies is fun.')}`},
+{t:'match',n:'Vocabulary Challenge',h:'🔗 Match the word to the picture',p:[['subject','📚'],['social studies','🌍'],['Islamic','🕌'],['CCDI','🎨💻'],['science','🔬']]},
+{t:'mem',n:'Memory Game',h:'🧠 Find the matching pairs',p:[['science','🔬'],['Islamic','🕌'],['CCDI','🎨💻'],['social studies','🌍']]},
+{t:'scr',n:'Word Puzzle',w:['science','subject','Islamic']},
+{t:'mcq',n:'Guess the Picture',q:'What is this subject?',big:'🔬',o:['science','Islamic','CCDI'],a:0},
+{t:'mcq',n:'Guess the Picture',q:'What is this subject?',big:'🕌',o:['social studies','Islamic','science'],a:1},
+{t:'mcq',n:'Listening Activity',q:'Listen and choose the word.',say:'science',o:['subject','science','CCDI'],a:1},
+{t:'mcq',n:'Fill in the Blanks',q:'I learn about the UAE in ______.',o:['science','social studies','CCDI'],a:1},
+{t:'mcq',n:'Quick Quiz',q:'I love to draw and design in ______.',o:['CCDI','Islamic','science'],a:0},
+{t:'mcq',n:'Quick Quiz',q:'Science is my favourite ______.',o:['CCDI','Islamic','subject'],a:2}]},
+{n:'Level 2',t:'Easy or Difficult?',e:'🧩',b:'🏅 Word Wizard',items:[
+{t:'s',h:'🧩 Describing Words',html:`<div style="text-align:center"><div class="mascot">🦉</div><p>Some subjects are <b>easy</b>. Some are <b>difficult</b>. Which ones are <b>interesting</b>?</p></div>`+can(['Use a glossary or dictionary to find or check what a word means.','Ask and answer a question about something I heard using details from the spoken text.','Spot topic-specific words for a subject I am discussing or presenting.'])},
+{t:'s',h:'📖 New Words',html:`<p>Use a dictionary to find the meaning. Then draw a picture that describes the word ✏️</p><div class="grid">${['easy','difficult','interesting','boring'].map(vc).join('')}</div>`},
+{t:'s',h:'✏️ Write a sentence for each word',html:`${sen('The test is easy.')}${sen('The small dog is very easy to pet.')}${sen('Math is difficult.')}${sen('This math problem is very difficult to do.')}${sen('Cats are interesting.')}${sen('I think space is very interesting.')}${sen('This game is boring.')}${sen('Sitting in a long queue is very boring.')}`},
+{t:'match',n:'Vocabulary Challenge',h:'🔗 Match the word to the picture',p:[['easy','😄'],['difficult','🪨'],['interesting','🐉'],['boring','🥱']]},
+{t:'mem',n:'Memory Game',h:'🧠 Find the matching pairs',p:[['easy','😄'],['difficult','🪨'],['interesting','🐉'],['boring','🥱']]},
+{t:'scr',n:'Word Puzzle',w:['easy','boring','difficult','interesting']},
+{t:'mcq',n:'Guess the Picture',q:'Which word matches the picture?',big:'🥱',o:['interesting','boring','easy'],a:1},
+{t:'mcq',n:'Guess the Picture',q:'Which word matches the picture?',big:'🪨',o:['difficult','easy','boring'],a:0},
+{t:'mcq',n:'Listening Activity',q:'Listen and choose the word.',say:'interesting',o:['easy','boring','interesting'],a:2},
+{t:'mcq',n:'Fill in the Blanks',q:'The small dog is very ______ to pet.',o:['easy','difficult','boring'],a:0},
+{t:'mcq',n:'Fill in the Blanks',q:'This math problem is very ______ to do.',o:['easy','interesting','difficult'],a:2},
+{t:'mcq',n:'Quick Quiz',q:'Sitting in a long queue is very ______.',o:['interesting','boring','easy'],a:1},
+{t:'bld',n:'Sentence Builder',s:['The test is easy.','Cats are interesting.','This game is boring.']}]},
+{n:'Level 3',t:'My Favourite Subject',e:'📖',b:'🏅 Reading Hero',items:[
+{t:'s',h:'📖 Let’s Read!',html:can(['Slow down when a text is harder so I can understand it.','Pause briefly when I see a comma in a text.','Use clues from the sentence to guess what a new word means.','Find an event in a story that reminds me of my own experience.'])+`<div class="pat">I like ______ because it is ______.</div><p style="text-align:center">Read the text: <b>My Favourite Subject</b></p>`},
+{t:'s',h:'👦 Nasser',html:`<div class="txt"><div class="av">👦</div><div><p>My name is Nasser. I am in Grade 3. My favourite subject is science. I like science because it is interesting. It teaches us about the world and how it works. Science is easy for me. I do not like maths because it is difficult sometimes. My friend Ahmed likes social studies.</p><button class="btn o" data-say="My name is Nasser. I am in Grade 3. My favourite subject is science. I like science because it is interesting. It teaches us about the world and how it works. Science is easy for me. I do not like maths because it is difficult sometimes. My friend Ahmed likes social studies.">🔊 Read aloud</button></div></div><p class="ar">ناصر يحب العلوم لأنها ممتعة، ولا يحب الرياضيات لأنها صعبة أحياناً.</p>`},
+{t:'s',h:'🧒 Ahmed',html:`<div class="txt"><div class="av">🧒</div><div><p>My name is Ahmed. My favourite subject is social studies. I like social studies because it is interesting. We learn about people and places. I also like Islamic studies. We learn stories and lessons about being kind and good to others. My sister, Hessa, likes CCDI.</p><button class="btn o" data-say="My name is Ahmed. My favourite subject is social studies. I like social studies because it is interesting. We learn about people and places. I also like Islamic studies. We learn stories and lessons about being kind and good to others. My sister, Hessa, likes CCDI.">🔊 Read aloud</button></div></div><p class="ar">أحمد يفضّل الدراسات الاجتماعية ويحب التربية الإسلامية، وأخته حصة تحب CCDI.</p>`},
+{t:'s',h:'👧 Hessa',html:`<div class="txt"><div class="av">👧</div><div><p>My name is Hessa. My favourite subject is CCDI. I like CCDI because it is fun and interesting. I like drawing and making things on the computer. I like Islamic studies, but I do not like music much.</p><button class="btn o" data-say="My name is Hessa. My favourite subject is CCDI. I like CCDI because it is fun and interesting. I like drawing and making things on the computer. I like Islamic studies, but I do not like music much.">🔊 Read aloud</button></div></div><p class="ar">حصة تحب CCDI لأنها ممتعة، وتحب التربية الإسلامية، ولا تحب الموسيقى كثيراً.</p>`},
+{t:'match',n:'Who likes what?',h:'🔗 Match the child to the favourite subject',p:[['Nasser','🔬 science'],['Ahmed','🌍 social studies'],['Hessa','🎨💻 CCDI']]},
+{t:'mcq',n:'Fill in the Blanks',q:'Nasser likes science because it is ______.',o:['interesting','boring','music'],a:0},
+{t:'mcq',n:'Grammar Challenge',q:'Nasser does not like maths because it is ______ sometimes.',o:['easy','difficult','fun'],a:1},
+{t:'mcq',n:'Grammar Challenge',q:'Hessa likes CCDI because it is fun and ______.',o:['boring','difficult','interesting'],a:2},
+{t:'mcq',n:'Quick Quiz',q:'Hessa does not like ______ much.',o:['Islamic studies','music','CCDI'],a:1},
+{t:'bld',n:'Sentence Builder',s:['I like science because it is interesting.','My friend Ahmed likes social studies.','I like drawing and making things on the computer.']}]},
+{n:'Level 4',t:'Answer the Questions',e:'🔎',b:'🏅 Super Detective',items:[
+{t:'s',h:'🔎 Be a Detective!',html:`<div style="text-align:center"><div class="mascot">🦉</div></div>`+can(['Answer literal questions using words straight from the text.','Find an example or detail in the text to back up my answer.'])},
+{t:'mcq',n:'Choose the Correct Answer',q:'1. What is Nasser’s favourite subject?',o:['social studies','science','CCDI'],a:1},
+{t:'mcq',n:'Choose the Correct Answer',q:'2. Why does Nasser like science?',o:['It is boring.','It is easy.','It is interesting.'],a:2},
+{t:'mcq',n:'Choose the Correct Answer',q:'3. What is Ahmed’s favourite subject?',o:['science','CCDI','social studies'],a:2},
+{t:'mcq',n:'Choose the Correct Answer',q:'4. Who is Ahmed’s sister?',o:['Sara','Hessa','Maryam'],a:1},
+{t:'mcq',n:'Choose the Correct Answer',q:'5. Why does Ahmed like Islamic studies?',o:['It is difficult.','It teaches lessons about being kind and good to others.','It teaches lessons about computers.'],a:1},
+{t:'r',n:'Evidence Question',q:'6. Which subject is difficult for Nasser? How do you know?',a:'<b>Maths.</b> Evidence: “I do not like maths because it is difficult sometimes.”'},
+{t:'r',n:'Evidence Question',q:'7. Who likes Islamic studies in the story? Write a sentence from the text to support your answer.',a:'<b>Ahmed:</b> “I also like Islamic studies.”<br><b>Hessa:</b> “I like Islamic studies.”'}]}];
+const R={};
+R.s=(it,el)=>{el.innerHTML=`<h2>${it.h}</h2>${it.html}`};
+R.r=(it,el)=>{el.innerHTML=`<h2>${it.q}</h2><button class="btn o" id="rv">👁 Show answer</button><div class="ans" id="an" hidden>${it.a}</div>`;$('#rv').onclick=()=>{$('#an').hidden=false;win(1)}};
+R.mcq=(it,el)=>{let t=0;el.innerHTML=`<h2>${it.q}</h2>${it.big?`<div class="big">${it.big}</div>`:''}${it.say?`<button class="btn o" data-say="${it.say}">🔊 Listen</button>`:''}<div class="grid">${it.o.map((o,k)=>`<button class="btn opt" data-k="${k}">${o}</button>`).join('')}</div>${S.teacher?'<button class="btn o" id="sa">👁 Show answer</button>':''}`;
+const B=[...el.querySelectorAll('.opt')];B.forEach(b=>b.onclick=()=>{if(fin)return;if(+b.dataset.k==it.a){b.classList.add('ok');win(!t);fin=true;upd()}else{b.classList.add('bad');t=1}});
+const sa=$('#sa');if(sa)sa.onclick=()=>B[it.a].classList.add('ok');if(it.say)say(it.say)};
+R.match=(it,el)=>{let sel=null,n=0,w=0;const L=sh(it.p.map((p,k)=>[p[0],k])),Q=sh(it.p.map((p,k)=>[p[1],k]));
+el.innerHTML=`<h2>${it.h}</h2><div class="cols"><div>${L.map(x=>`<button class="btn opt" data-s="l" data-k="${x[1]}">${x[0]}</button>`).join('')}</div><div>${Q.map(x=>`<button class="btn opt" data-s="r" data-k="${x[1]}">${x[0]}</button>`).join('')}</div></div>`;
+el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(b.classList.contains('ok'))return;
+if(b.dataset.s=='l'){el.querySelectorAll('[data-s=l]').forEach(x=>x.style.outline='');sel=b;b.style.outline='4px solid var(--pri)';say(b.textContent);return}
+if(!sel)return;if(sel.dataset.k==b.dataset.k){sel.classList.add('ok');b.classList.add('ok');sel.style.outline='';sel=null;if(++n==it.p.length){win(!w);fin=true;upd()}else tst('👍')}else{b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),400);w=1}})};
+R.mem=(it,el)=>{const c=sh(it.p.flatMap((p,k)=>[[p[0],k],[p[1],k]]));let o=[],m=0,w=0,lock=0;
+el.innerHTML=`<h2>${it.h}</h2><div class="grid">${c.map((x,j)=>`<button class="btn" style="min-height:90px">❓</button>`).join('')}</div>`;
+const B=[...el.querySelectorAll('.btn')];B.forEach((b,j)=>b.onclick=()=>{if(lock||b.dataset.f||o.includes(j))return;b.textContent=c[j][0];b.classList.add('opt');o.push(j);
+if(o.length==2){const[x,y]=o;if(c[x][1]==c[y][1]){B[x].dataset.f=B[y].dataset.f=1;B[x].classList.add('ok');B[y].classList.add('ok');o=[];if(++m==it.p.length){win(w<3);fin=true;upd()}else tst('👍')}else{w++;lock=1;setTimeout(()=>{[x,y].forEach(z=>{B[z].textContent='❓';B[z].classList.remove('opt')});o=[];lock=0},900)}}})};
+R.scr=(it,el)=>{let k=0;const nx=()=>{const W=it.w[k];let a='';
+el.innerHTML=`<h2>Word Puzzle ${k+1}/${it.w.length}</h2><div class="big">${E[W][0]}</div><div class="slot" id="sl">…</div><div>${sh(W.split('')).map(c=>`<button class="btn">${c}</button>`).join('')}</div><button class="btn o" id="rr">↺ Reset</button>`;
+const B=[...el.querySelectorAll('.btn:not(.o)')],sl=$('#sl');
+B.forEach(b=>b.onclick=()=>{a+=b.textContent;b.disabled=true;sl.textContent=a;if(a.length==W.length){if(a==W){sl.classList.add('ok');say(W);win(1);k++;if(k<it.w.length)setTimeout(nx,1200);else{fin=true;upd()}}else{tst('Try again! 🔁');setTimeout(nx,700)}}});
+$('#rr').onclick=nx};nx()};
+R.bld=(it,el)=>{let k=0;const nx=()=>{const s=it.s[k],ws=s.split(' '),pool=sh(ws.map((x,j)=>j));let a=[];
+const draw=()=>{el.innerHTML=`<h2>Sentence Builder ${k+1}/${it.s.length}</h2><p>Tap the words in the right order.</p><div class="slot">${a.map(j=>`<button class="btn opt" data-r="${j}">${ws[j]}</button>`).join('')||'…'}</div><div>${pool.filter(j=>!a.includes(j)).map(j=>`<button class="btn" data-p="${j}">${ws[j]}</button>`).join('')}</div>`;
+on('[data-p]',b=>{a.push(+b.dataset.p);say(b.textContent);draw();chk()});on('[data-r]',b=>{a.splice(a.indexOf(+b.dataset.r),1);draw()})};
+const chk=()=>{if(a.length==ws.length){if(a.map(j=>ws[j]).join(' ')==s){say(s);win(1);k++;if(k<it.s.length)setTimeout(nx,1300);else{fin=true;upd()}}else{tst('Try again! 🔁');setTimeout(()=>{a=[];draw()},800)}}};draw()};nx()};
+function upd(){const n=$('#nx');if(n){n.disabled=!(fin||S.teacher);n.textContent=i<items.length-1?'Next ▶':'Finish ✔'}}
+function go(){const it=items[i];fin=it.t=='s'||it.t=='r';
+$('#app').innerHTML=`<div class="card"><div class="bar"><i style="width:${(i+1)/items.length*100}%"></i></div><h3>${ttl} · ${i+1}/${items.length}${it.n?' · '+it.n:''}</h3><div id="st"></div></div><div class="nav"><button class="btn o" id="pv">◀ Back</button><button class="btn" id="rs">↻ Restart activity</button><button class="btn o" id="nx">Next ▶</button></div>`;
+R[it.t](it,$('#st'));$('#pv').onclick=()=>{if(i>0){i--;go()}};$('#rs').onclick=go;$('#nx').onclick=()=>{if(i<items.length-1){i++;go()}else onEnd()};upd();scrollTo(0,0)}
+const prog=()=>`<div class="bar"><i style="width:${S.done.length/5*100}%"></i></div><p>Unit progress: ${S.done.length}/5 ${S.done.map(k=>k<4?LS[k].b:'🏆 Champion').join(' ')}</p>`;
+function home(){items=[];$('#app').innerHTML=`<div class="card" style="text-align:center"><div class="mascot">🦉</div><h1>English – Unit 1</h1><h2>Back to School 🎒</h2><p>“Hello, friends! Welcome back to school! Let’s learn and play together!”</p><button class="btn o big2" id="a">🚀 Start Learning</button><button class="btn big2" id="b">🎮 Let’s Play</button>${prog()}</div>`;$('#a').onclick=map;$('#b').onclick=play}
+function map(){items=[];const op=k=>S.teacher||k==0||S.done.includes(k-1);
+$('#app').innerHTML=`<div class="card"><h2>🗺️ Choose your adventure</h2>${prog()}<div class="grid">${LS.map((L,k)=>`<button class="btn lv ${op(k)?'':'lock'}" data-k="${k}"><span class="em">${L.e}</span>${L.n}<br><small>${L.t}</small>${S.done.includes(k)?' ✅':''}${op(k)?'':' 🔒'}</button>`).join('')}<button class="btn o lv ${S.teacher||S.done.length>=4?'':'lock'}" id="fn"><span class="em">🏆</span>Final Challenge</button></div>${S.teacher?`<div class="ans">👩‍🏫 <b>Class summary:</b> ⭐ ${S.stars} stars · Levels finished ${S.done.filter(k=>k<4).length}/4 · ${S.done.length?S.done.map(k=>k<4?LS[k].b:'🏆').join(' '):'no badges yet'}</div>`:''}</div>`;
+on('.lv[data-k]',b=>{const k=+b.dataset.k;if(op(k)){items=LS[k].items;i=0;ttl=LS[k].n+': '+LS[k].t;onEnd=()=>lend(k);go()}});
+$('#fn').onclick=()=>{if(!(S.teacher||S.done.length>=4)){tst('Finish all 4 levels first! 🔒');return}
+const pool=LS.flatMap(L=>L.items.filter(x=>x.t=='mcq'));items=sh(pool).slice(0,10).map(x=>({...x,n:'Final Challenge'}));i=0;S.fs=0;ttl='🏆 Final Challenge';onEnd=res;go()}}
+function play(){const all=LS.flatMap(L=>L.items.filter(x=>x.t!='s').map(x=>[L.n,x]));
+$('#app').innerHTML=`<div class="card"><h2>🎮 Play Zone</h2><p>Pick any game!</p><div class="grid">${all.map((x,k)=>`<button class="btn ${x[1].t=='mcq'?'opt':''}" data-k="${k}">${x[1].n}<br><small>${x[0]}</small></button>`).join('')}</div></div>`;
+on('[data-k]',b=>{items=[all[+b.dataset.k][1]];i=0;ttl='🎮 Play';onEnd=play;go()})}
+function lend(k){if(!S.done.includes(k))S.done.push(k);fx('🏅 '+LS[k].b);
+$('#app').innerHTML=`<div class="card" style="text-align:center"><div class="mascot">🏅</div><h1>${LS[k].b}</h1><h2>Excellent! ${LS[k].n} complete!</h2>${prog()}<button class="btn o big2" id="n1">${k<3?'Next Level ▶':'Final Challenge 🏆'}</button><button class="btn big2" id="n2">🗺️ Map</button></div>`;
+$('#n2').onclick=map;$('#n1').onclick=()=>{if(k<3){items=LS[k+1].items;i=0;ttl=LS[k+1].n+': '+LS[k+1].t;onEnd=()=>lend(k+1);go()}else{map();$('#fn').click()}}}
+function res(){if(!S.done.includes(4))S.done.push(4);const n=S.fs;fx('🏆');
+$('#app').innerHTML=`<div class="card" style="text-align:center"><div class="mascot">${n>=9?'🏆':n>=6?'🌟':'💪'}</div><h1>${n} / 10</h1><h2>${n>=9?'Amazing! You are a Unit 1 Champion!':n>=6?'Well Done! Great work!':'Good try! Practise and play again!'}</h2><p style="font-size:2em">${'⭐'.repeat(Math.ceil(n/2))}</p>${prog()}<button class="btn o big2" id="n1">🔁 Play again</button><button class="btn big2" id="n2">🗺️ Map</button></div>`;
+$('#n2').onclick=map;$('#n1').onclick=()=>{map();$('#fn').click()}}
+$('#hm').onclick=home;$('#mp').onclick=map;
+$('#tb').onclick=()=>{S.teacher=!S.teacher;document.body.classList.toggle('tm',S.teacher);$('#tb').classList.toggle('on',S.teacher);tst(S.teacher?'👩‍🏫 Teacher Mode ON':'Teacher Mode OFF');items.length?go():home()};
+document.addEventListener('keydown',e=>{if(!S.teacher||!items.length)return;if(e.key=='ArrowRight')$('#nx')?.click();if(e.key=='ArrowLeft')$('#pv')?.click()});
+home();
+</script></body></html>
